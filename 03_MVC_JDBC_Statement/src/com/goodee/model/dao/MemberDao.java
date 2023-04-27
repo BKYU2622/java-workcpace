@@ -213,4 +213,84 @@ public class MemberDao {	// 데이터 처리
 		return list;
 	}
 	
+	// Controller에서 요청하는 회원정보 변경을 수행하는 메서드 
+	public int updateMember(Member m) {
+		int result = 0;
+		
+		Connection conn = null;
+		Statement  stmt = null;
+		
+		String sql = "UPDATE MEMBER "
+					+ "SET USER_PWD = '" + m.getUserPwd() + "'" 
+					+ "EAMIL = '" + m.getEmail() + "'"
+					+ " PHONE = '" + m.getPhone() + "'"
+					+ " ADDRESS = '" + m.getAddress() + "'"
+				    + "WHERE USER_ID = '" + m.getUserId() + "'";
+								      						 
+			System.out.println(sql);			
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","JDBC","JDBC");
+			stmt = conn.createStatement();
+			result = stmt.executeUpdate(sql);
+			
+			if(result > 0) {
+				conn.commit();
+			}else {
+				conn.rollback();
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	// Controller에서 요청한 회원정보 삭제 작업을 수행할 메서드
+	public int deleteMember(String userId) {
+		int result = 0;
+		
+		Connection conn = null;
+		Statement  stmt = null;
+		ResultSet  rset = null;
+		
+		String sql = "DELETE FROM MEMBER " + "WHERE USER_ID = '" + userId + "'";
+		
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","JDBC","JDBC");
+			stmt = conn.createStatement();
+			result = stmt.executeUpdate(sql);
+			
+			if(result > 0) {
+				conn.commit();
+			} else {
+				conn.rollback();
+			}
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
+	}
+
 }
